@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  casadin-backend:
+    build: .
+    container_name: casadin-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: npm run start:dev
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_USERNAME=casadin
+      - DB_PASSWORD=casadin
+      - DB_DATABASE=casadin_db
+      - NODE_ENV=development
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  casadin-frontend:
+    image: node:20-alpine
+    container_name: casadin-frontend
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    command: npm run dev
+    volumes:
+      - ../casadin-frontend:/app
+    networks:
+      - app-network
+
+  database:
+    image: postgres
+    container_name: casadin-database
+    environment:
+      POSTGRES_USER: casadin
+      POSTGRES_PASSWORD: casadin
+      POSTGRES_DB: casadin_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  db_data:
