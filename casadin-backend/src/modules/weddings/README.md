@@ -66,7 +66,7 @@ O sistema usa permissões baseadas na relação do usuário com cada casamento e
 
 ## Upload de Imagens
 
-O sistema usa **Cloudinary** para armazenamento de imagens. Veja [CLOUDINARY_SETUP.md](./CLOUDINARY_SETUP.md) para configuração.
+O sistema usa **MinIO** para armazenamento de arquivos binários. Veja [MINIO_SETUP.md](./MINIO_SETUP.md) para configuração.
 
 ### Endpoints de Upload
 
@@ -110,7 +110,7 @@ photo: arquivo.jpg
 - **Tamanho máximo**: 5MB por arquivo
 - **Formatos aceitos**: JPG, JPEG, PNG, WebP
 - **Máximo de fotos**: 10 fotos dos noivos por upload
-- **Otimização automática**: Redimensionamento e compressão
+ 
 
 ## Endpoints Disponíveis
 
@@ -255,8 +255,8 @@ const contribution = await fetch('/weddings/gifts/1/payment', {
   "weddingDate": "2024-12-25",
   "weddingLocation": "Igreja Nossa Senhora",
   "couplePhotos": [
-    "https://res.cloudinary.com/.../photo1.jpg",
-    "https://res.cloudinary.com/.../photo2.jpg"
+    "https://minio.example.com/casadin/weddings/couple-photos/photo1.jpg",
+    "https://minio.example.com/casadin/weddings/couple-photos/photo2.jpg"
   ],
   "description": "Nosso casamento será um momento especial...",
   "godparents": [
@@ -274,7 +274,7 @@ const contribution = await fetch('/weddings/gifts/1/payment', {
       "store": "Magazine Luiza"
     }
   ],
-  "footerPhoto": "https://res.cloudinary.com/.../footer.jpg"
+  "footerPhoto": "https://minio.example.com/casadin/weddings/footer/footer.jpg"
 }
 ```
 

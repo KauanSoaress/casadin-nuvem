@@ -1,13 +1,12 @@
-version: '3.8'
-
 services:
   casadin-backend:
-    build: .
+    build: ./casadin-backend
     container_name: casadin-backend
     ports:
       - "3001:3001"
     volumes:
-      - .:/app
+      - ./casadin-backend:/app
+      - /app/node_modules
     working_dir: /app
     command: npm run start:dev
     environment:
@@ -24,7 +23,7 @@ services:
       - MINIO_SECRET_KEY=minioadmin
       - MINIO_BUCKET=casadin
       - MINIO_REGION=us-east-1
-      - MINIO_PUBLIC_URL=http://localhost:9000
+      - MINIO_PUBLIC_URL=http://minio:9000
     depends_on:
       - database
       - minio
@@ -33,20 +32,20 @@ services:
 
   casadin-frontend:
     build: 
-      context: ../casadin-frontend
+      context: ./casadin-frontend
       dockerfile: Dockerfile
     container_name: casadin-frontend
     ports:
       - "3000:3000"
     volumes:
-      - ../casadin-frontend:/app
+      - ./casadin-frontend:/app
       - /app/node_modules
       - /app/.next
     working_dir: /app
     command: npm run dev
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - NEXT_PUBLIC_API_URL=http://casadin-backend:3001
     depends_on:
       - casadin-backend
     networks:
@@ -78,6 +77,29 @@ services:
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      echo 'Configurando MinIO...';
+      mc alias set minio http://minio:9000 minioadmin minioadmin;
+      mc mb --ignore-existing minio/casadin;
+      mc anonymous set download minio/casadin;
+      echo 'MinIO configurado com sucesso!';
+      exit 0
+      "
     networks:
       - app-network
 
