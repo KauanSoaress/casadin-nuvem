@@ -7,7 +7,7 @@ Sistema de gerenciamento de casamentos e presentes desenvolvido com NestJS e Typ
 - **Autenticação**: Sistema de login e registro com JWT
 - **Gerenciamento de Casamentos**: Criação, edição e visualização de casamentos
 - **Sistema de Convidados**: Controle de permissões baseado em relações (noivos vs convidados)
-- **Upload de Imagens**: Integração com Cloudinary para fotos
+- **Upload de Arquivos**: Armazenamento de binários no MinIO
 - **Sistema de Presentes**: Controle de pagamentos e contribuições
 - **Documentação API**: Swagger completo para todos os endpoints
 
@@ -16,7 +16,7 @@ Sistema de gerenciamento de casamentos e presentes desenvolvido com NestJS e Typ
 - Node.js (versão 16 ou superior)
 - npm ou yarn
 - MySQL ou PostgreSQL
-- Conta no Cloudinary (para upload de imagens)
+- Instância MinIO acessível (local ou hospedada)
 
 ## 🛠️ Instalação
 
@@ -48,10 +48,16 @@ DB_DATABASE=casadin_db
 # JWT
 JWT_SECRET=seu_jwt_secret_super_seguro
 
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=seu_cloud_name
-CLOUDINARY_API_KEY=sua_api_key
-CLOUDINARY_API_SECRET=seu_api_secret
+# MinIO
+MINIO_ENDPOINT=localhost
+MINIO_PORT=9000
+MINIO_USE_SSL=false
+MINIO_ACCESS_KEY=seu_access_key
+MINIO_SECRET_KEY=seu_secret_key
+MINIO_BUCKET=casadin
+MINIO_REGION=us-east-1
+# URL pública opcional (use quando o endpoint expõe os objetos via HTTP/S)
+MINIO_PUBLIC_URL=http://localhost:9000
 
 # App
 PORT=3000
@@ -64,7 +70,7 @@ npm run migration:run
 
 5. Inicie o servidor:
 ```bash
-npm run start:dev
+z'
 ```
 
 ## 📚 Documentação da API
@@ -174,14 +180,14 @@ npm run test:e2e           # Executar testes end-to-end
 npm run test:cov           # Executar testes com cobertura
 ```
 
-## 🔧 Configuração do Cloudinary
+## 🔧 Configuração do MinIO
 
-Para usar o sistema de upload de imagens, configure o Cloudinary:
+Para armazenar arquivos, configure o MinIO:
 
-1. Crie uma conta em [cloudinary.com](https://cloudinary.com)
-2. Obtenha suas credenciais (Cloud Name, API Key, API Secret)
-3. Configure as variáveis de ambiente
-4. Consulte `src/modules/weddings/CLOUDINARY_SETUP.md` para mais detalhes
+1. Tenha uma instância MinIO rodando (ex.: `docker run -p 9000:9000 -p 9001:9001 -e MINIO_ROOT_USER=admin -e MINIO_ROOT_PASSWORD=senha minio/minio server /data --console-address ":9001"`)
+2. Crie um usuário ou use as credenciais padrão e defina bucket e região
+3. Preencha as variáveis `MINIO_*` no `.env`
+4. Consulte `src/modules/weddings/MINIO_SETUP.md` para detalhes e exemplos de URLs
 
 ## 📝 Licença
 

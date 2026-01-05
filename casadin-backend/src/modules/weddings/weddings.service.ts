@@ -18,6 +18,7 @@ import {
   WeddingUserRole,
 } from "./models/wedding-user-relation.entity";
 import { Wedding } from "./models/wedding.entity";
+import { UploadService } from "./services/upload.service";
 
 @Injectable()
 export class WeddingsService {
@@ -30,6 +31,7 @@ export class WeddingsService {
     private giftsRepository: Repository<Gift>,
     @InjectRepository(WeddingUserRelation)
     private userRelationsRepository: Repository<WeddingUserRelation>,
+    private uploadService: UploadService,
   ) { }
 
   private generateInvitationCode(): string {
@@ -215,6 +217,43 @@ export class WeddingsService {
   async remove(id: number, userId: number): Promise<void> {
     await this.checkUserPermission(id, userId, [WeddingUserRole.FIANCE]);
 
+    // Buscar o casamento com todas as relações para excluir imagens
+    const wedding = await this.weddingsRepository.findOne({
+      where: { id },
+      relations: ['godparents', 'gifts'],
+    });
+
+    if (wedding) {
+      // Excluir fotos do casal
+      if (wedding.couplePhotos && wedding.couplePhotos.length > 0) {
+        for (const photoUrl of wedding.couplePhotos) {
+          await this.uploadService.deleteImage(photoUrl);
+        }
+      }
+
+      // Excluir foto do rodapé
+      if (wedding.footerPhoto) {
+        await this.uploadService.deleteImage(wedding.footerPhoto);
+      }
+
+      // Excluir fotos dos padrinhos
+      if (wedding.godparents && wedding.godparents.length > 0) {
+        for (const godparent of wedding.godparents) {
+          if (godparent.photo) {
+            await this.uploadService.deleteImage(godparent.photo);
+          }
+        }
+      }
+
+      // Excluir fotos dos presentes
+      if (wedding.gifts && wedding.gifts.length > 0) {
+        for (const gift of wedding.gifts) {
+          if (gift.photo) {
+            await this.uploadService.deleteImage(gift.photo);
+          }
+        }
+      }
+    }
 
     await this.weddingsRepository.update(id, { isActive: false });
   }

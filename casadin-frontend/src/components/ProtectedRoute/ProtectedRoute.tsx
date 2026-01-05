@@ -1,18 +1,28 @@
 "use client";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuthContext();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted && !loading && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, router, isMounted]);
+
+  // Durante a hidratação, renderizar os filhos sem verificação
+  if (!isMounted) {
+    return <>{children}</>;
+  }
 
   if (loading) {
     return (
@@ -37,6 +47,10 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         </Typography>
       </Box>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null;
   }
 
   return <>{children}</>;
