@@ -2,11 +2,14 @@ import logoutIcon from "@/assets/logout-icon.svg";
 import xClose from "@/assets/x-close.svg";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import DownloadIcon from "@mui/icons-material/Download";
 import Image from "next/image";
 import React from "react";
+import { authService } from "@/services/authService";
 
 interface ProfileMenuProps {
     open: boolean;
@@ -45,6 +48,27 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ open, onClose, user, logout }
                         </IconButton>
                     </Box>
                     <Box sx={{ borderBottom: '0.666px solid #707070', mb: 2 }} />
+                    <Button
+                        onClick={async () => await authService.getLogsCsv()}
+                        startIcon={<DownloadIcon />}
+                        variant="outlined"
+                        sx={{
+                            width: { xs: '100%', sm: 279.72 },
+                            height: 39.96,
+                            borderRadius: '8px',
+                            fontFamily: 'var(--font-figtree)',
+                            fontWeight: 400,
+                            fontSize: 20,
+                            color: 'black',
+                            borderColor: 'black',
+                            '&:hover': {
+                                backgroundColor: 'rgba(0,123,255,0.04)',
+                                borderColor: 'black',
+                            },
+                        }}
+                    >
+                        Baixar logs
+                    </Button>
                 </div>
                 <Box
                     onClick={logout}

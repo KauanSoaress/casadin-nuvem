@@ -51,4 +51,22 @@ export const authService = {
   getToken: () => localStorage.getItem(TOKEN_KEY),
 
   logout: () => localStorage.removeItem(TOKEN_KEY),
+
+  getLogsCsv: async (): Promise<void> => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) throw new Error('Token não encontrado');
+    const response = await api.get('log-test/csv', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: 'blob',
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'logs.csv');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  },
 };

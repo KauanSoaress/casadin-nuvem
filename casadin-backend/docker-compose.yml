@@ -80,6 +80,29 @@ services:
     command: server /data --console-address ":9001"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      echo 'Configurando MinIO...';
+      mc alias set minio http://minio:9000/ minioadmin minioadmin;
+      mc mb --ignore-existing minio/casadin;
+      mc anonymous set download minio/casadin;
+      echo 'MinIO configurado com sucesso!';
+      exit 0
+      "
+    networks:
+      - app-network
 
 networks:
   app-network:

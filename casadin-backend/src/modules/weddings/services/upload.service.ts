@@ -91,7 +91,7 @@ export class UploadService {
     try {
       // Garantir que o bucket existe apenas uma vez
       await this.ensureBucketExists();
-      
+
       const uploadPromises = files.map((file) =>
         this.uploadImageInternal(file, folder),
       );
