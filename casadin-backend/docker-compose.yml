@@ -2,12 +2,15 @@ version: '3.8'
 
 services:
   casadin-backend:
-    build: .
+    build: 
+      context: ../casadin-backend
+      dockerfile: Dockerfile
     container_name: casadin-backend
     ports:
       - "3001:3001"
     volumes:
       - .:/app
+      - /app/node_modules
     working_dir: /app
     command: npm run start:dev
     environment:

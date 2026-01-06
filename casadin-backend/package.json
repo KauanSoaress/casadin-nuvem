@@ -31,6 +31,8 @@
     "@nestjs/typeorm": "^11.0.0",
     "@types/multer": "^2.0.0",
     "@types/pg": "^8.15.4",
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0",
     "aws-sdk": "^2.1693.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
